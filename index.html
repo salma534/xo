@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Smart Tic-Tac-Toe</title>
   <style>
-    /* ---------- GLOBAL STYLING ---------- */
     body {
       font-family: "Poppins", Arial, sans-serif;
       margin: 0;
@@ -14,89 +13,93 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(135deg, #87CEFA, #ffffff);
-      color: #333;
+      background: black;
+      color: white;
     }
 
     h1 {
       font-size: 42px;
-      margin-bottom: 15px;
-      letter-spacing: 1px;
-      text-shadow: 0 3px 6px rgba(0,0,0,0.2);
+      margin-bottom: 10px;
+      color: white;
     }
 
-    /* ---------- GAME BOARD ---------- */
+    /* BIG WIN MESSAGE */
+    #bigMessage {
+      font-size: 60px;
+      font-weight: 800;
+      height: 70px;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
     #board {
-      background: rgba(255,255,255,0.35);
+      background: #111;
       padding: 20px;
       border-radius: 20px;
-      backdrop-filter: blur(8px);
       display: grid;
       grid-template-columns: repeat(3, 110px);
       grid-template-rows: repeat(3, 110px);
       gap: 10px;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+      box-shadow: 0 0 25px rgba(0,0,0,0.7);
     }
 
     .cell {
       width: 110px;
       height: 110px;
-      background: rgba(255,255,255,0.7);
-      border-radius: 15px;
+      background: #222;
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 60px;
-      font-weight: 600;
-      color: #333;
+      font-weight: 700;
+      color: white;
       cursor: pointer;
-      transition: 0.25s ease;
+      transition: 0.15s ease;
       user-select: none;
     }
 
     .cell:hover {
-      background: rgba(255,255,255,0.9);
-      transform: scale(1.05);
-      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+      background: #333;
+      transform: scale(1.03);
     }
 
     .cell:active {
-      transform: scale(0.95);
+      transform: scale(0.97);
     }
 
-    /* Highlight winning cells */
+    /* Winner highlight */
     .winner {
-      background: #6ee7b7 !important;
-      box-shadow: 0 0 20px #34d399;
-      color: #064e3b;
+      background: #00c74a;
+      color: black;
+      font-weight: 800;
     }
 
-    /* ---------- MESSAGE AREA ---------- */
     #message {
-      margin-top: 25px;
-      font-size: 24px;
+      margin-top: 20px;
+      font-size: 22px;
       min-height: 28px;
-      letter-spacing: 1px;
-      text-shadow: 0 2px 5px rgba(0,0,0,0.15);
     }
 
-    /* ---------- BUTTON ---------- */
     button {
-      margin-top: 25px;
+      margin-top: 20px;
       padding: 12px 30px;
       font-size: 18px;
-      border-radius: 12px;
+      border-radius: 10px;
       border: none;
-      background: #2563eb;
+      background: #2a2a2a;
       color: white;
       cursor: pointer;
-      transition: 0.25s ease;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      transition: 0.2s ease;
     }
+
     button:hover {
-      background: #1e40af;
+      background: #3a3a3a;
       transform: scale(1.05);
     }
+
     button:active {
       transform: scale(0.95);
     }
@@ -106,18 +109,20 @@
 <body>
   <h1>Smart Tic-Tac-Toe</h1>
 
+  <div id="bigMessage"></div>
   <div id="board"></div>
   <div id="message"></div>
 
   <button onclick="resetGame()">Restart Game</button>
 
-
   <script>
     const board = Array(9).fill(null);
     const player = 'X';
     const computer = 'O';
+
     const boardDiv = document.getElementById('board');
     const messageDiv = document.getElementById('message');
+    const bigMessage = document.getElementById('bigMessage');
 
     function createBoard(highlight = []) {
       boardDiv.innerHTML = '';
@@ -125,6 +130,7 @@
       board.forEach((cell, idx) => {
         const cellDiv = document.createElement('div');
         cellDiv.classList.add('cell');
+
         if (highlight.includes(idx)) cellDiv.classList.add('winner');
 
         cellDiv.dataset.index = idx;
@@ -139,7 +145,6 @@
       if (!board[idx] && !checkWinner(board)) {
         board[idx] = player;
         createBoard();
-
         if (!checkWinner(board)) {
           setTimeout(computerMove, 300);
         }
@@ -164,6 +169,7 @@
         [0,3,6],[1,4,7],[2,5,8],
         [0,4,8],[2,4,6]
       ];
+
       for (let combo of winCombos) {
         const [a,b,c] = combo;
         const values = [board[a], board[b], board[c]];
@@ -189,24 +195,39 @@
         [0,3,6],[1,4,7],[2,5,8],
         [0,4,8],[2,4,6]
       ];
+
       for (let combo of winCombos) {
         const [a,b,c] = combo;
         if (bd[a] && bd[a] === bd[b] && bd[a] === bd[c]) {
+
+          // Big custom message
+          if (bd[a] === 'X') {
+            bigMessage.style.color = "#00ff55";
+            bigMessage.textContent = "WHOOP WHOOP";
+          } else {
+            bigMessage.style.color = "#ff3b3b";
+            bigMessage.textContent = "LOSER";
+          }
+
           messageDiv.textContent = `${bd[a]} wins!`;
           createBoard([a, b, c]);
           return bd[a];
         }
       }
+
       if (!bd.includes(null)) {
         messageDiv.textContent = "It's a draw!";
+        bigMessage.textContent = "";
         return 'draw';
       }
+
       return null;
     }
 
     function resetGame() {
       board.fill(null);
       messageDiv.textContent = '';
+      bigMessage.textContent = '';
       createBoard();
     }
 

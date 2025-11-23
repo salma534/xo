@@ -19,19 +19,25 @@
 
     h1 {
       font-size: 42px;
-      margin-bottom: 10px;
-      color: white;
+      margin-bottom: 15px;
     }
 
-    /* BIG WIN MESSAGE */
+    /* OVERLAY BIG WIN MESSAGE */
     #bigMessage {
-      font-size: 60px;
-      font-weight: 800;
-      height: 70px;
-      margin-bottom: 15px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      position: absolute;
+      font-size: 70px;
+      font-weight: 900;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 10;
+      text-align: center;
+    }
+
+    /* Board wrapper so message sits over it */
+    #boardContainer {
+      position: relative;
+      display: inline-block;
     }
 
     #board {
@@ -42,7 +48,7 @@
       grid-template-columns: repeat(3, 110px);
       grid-template-rows: repeat(3, 110px);
       gap: 10px;
-      box-shadow: 0 0 25px rgba(0,0,0,0.7);
+      box-shadow: 0 0 25px rgba(0,0,0,0.6);
     }
 
     .cell {
@@ -66,11 +72,6 @@
       transform: scale(1.03);
     }
 
-    .cell:active {
-      transform: scale(0.97);
-    }
-
-    /* Winner highlight */
     .winner {
       background: #00c74a;
       color: black;
@@ -100,19 +101,18 @@
       transform: scale(1.05);
     }
 
-    button:active {
-      transform: scale(0.95);
-    }
   </style>
 </head>
 
 <body>
   <h1>Smart Tic-Tac-Toe</h1>
 
-  <div id="bigMessage"></div>
-  <div id="board"></div>
-  <div id="message"></div>
+  <div id="boardContainer">
+    <div id="bigMessage"></div>
+    <div id="board"></div>
+  </div>
 
+  <div id="message"></div>
   <button onclick="resetGame()">Restart Game</button>
 
   <script>
@@ -200,7 +200,6 @@
         const [a,b,c] = combo;
         if (bd[a] && bd[a] === bd[b] && bd[a] === bd[c]) {
 
-          // Big custom message
           if (bd[a] === 'X') {
             bigMessage.style.color = "#00ff55";
             bigMessage.textContent = "WHOOP WHOOP";
@@ -208,6 +207,8 @@
             bigMessage.style.color = "#ff3b3b";
             bigMessage.textContent = "LOSER";
           }
+
+          bigMessage.style.opacity = 1;
 
           messageDiv.textContent = `${bd[a]} wins!`;
           createBoard([a, b, c]);
@@ -217,7 +218,7 @@
 
       if (!bd.includes(null)) {
         messageDiv.textContent = "It's a draw!";
-        bigMessage.textContent = "";
+        bigMessage.style.opacity = 0;
         return 'draw';
       }
 
@@ -228,6 +229,7 @@
       board.fill(null);
       messageDiv.textContent = '';
       bigMessage.textContent = '';
+      bigMessage.style.opacity = 0;
       createBoard();
     }
 
